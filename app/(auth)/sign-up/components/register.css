@@ -1,0 +1,11 @@
+.react-select-container {
+  width: 100%;
+  border: 1px solid gray;
+  border-radius: 12px;
+}
+.react-select__control {
+  padding: 0.5rem;
+}
+.react-select__menu {
+  text-align: right;
+}
