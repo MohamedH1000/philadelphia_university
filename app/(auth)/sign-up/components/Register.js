@@ -224,7 +224,7 @@ const Register = () => {
                   value={countryOptions.find(
                     (option) => option.label === field.label
                   )}
-                  onChange={(selected) => field.onChange(selected?.value)}
+                  onChange={(selected) => field.onChange(selected?.label)}
                   className="react-select-container"
                   classNamePrefix="react-select"
                 />
@@ -240,9 +240,13 @@ const Register = () => {
             <FormItem>
               <FormLabel className="text-xl">{"التخصص"}:</FormLabel>
               <FormControl>
-                <SelectSpec required>
+                <SelectSpec
+                  value={field.value} // Bind the form field's value
+                  onValueChange={(value) => field.onChange(value)} // Update the form field on change
+                  required
+                >
                   <SelectTrigger className="w-full" dir="rtl">
-                    <SelectValue />
+                    <SelectValue placeholder="اختر التخصص" />
                   </SelectTrigger>
                   <SelectContent dir="rtl">
                     <SelectItem value="هندسة برمجيات">هندسة برمجيات</SelectItem>

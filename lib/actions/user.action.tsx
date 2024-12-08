@@ -20,6 +20,9 @@ export async function getCurrentUser() {
       where: {
         uniNumber: session.user.universityNo as string,
       },
+      include: {
+        roleStudent: true,
+      },
     });
 
     if (!currentUser) return null;
@@ -29,6 +32,62 @@ export async function getCurrentUser() {
     return null;
   }
 }
+
+export async function updateStudentAdmission(userId: String, value: String) {
+  try {
+    const updatedAdmission = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        admission: value,
+      },
+    });
+    return updatedAdmission;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getAllUsers() {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        uniNumber: true,
+        role: true,
+        roleStudent: true,
+        specialization: true,
+        admission: true,
+        nationality: true,
+        nationalNumber: true,
+        birthDate: true,
+        createdAt: true,
+        hashedPassword: false, // Include the related roles
+      },
+    });
+
+    const formattedUsers = users.map((user) => ({
+      ...user,
+      birthDate: user.birthDate.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      createdAt: user.createdAt.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    }));
+
+    return formattedUsers;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function createUser(userData: any) {
   try {
     const {
@@ -51,6 +110,12 @@ export async function createUser(userData: any) {
         nationality,
         specialization,
         hashedPassword,
+        roleStudent: {
+          create: {
+            value: "1",
+            name: "مقدم",
+          },
+        },
       },
     });
 

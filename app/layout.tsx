@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+import { Tajawal } from "next/font/google";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+// const geistTajwal = localFont({
+//   src: "./fonts/Tajawal-Bold.ttf",
+//   variable: "--font-tajwal-bold",
+//   weight: "100 900",
+// });
+
+const tajwal = Tajawal({
+  subsets: ["latin"],
+  weight: ["400", "700"], // specify the weights you need
 });
 
 export const metadata: Metadata = {
@@ -25,10 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={` ${tajwal.className} antialiased`}>
         {children}
+        <Toaster position="bottom-right" reverseOrder={false} />
       </body>
     </html>
   );

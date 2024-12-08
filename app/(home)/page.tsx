@@ -10,9 +10,12 @@ export default async function Home() {
   }
 
   if (currentUser.role === "admin") {
-    redirect("/admin");
+    redirect("/dashboard");
   }
+
+  console.log(currentUser);
   const dateObject = new Date(currentUser?.birthDate);
+
   const formattedDate = dateObject.toLocaleDateString("ar-EG", {
     year: "numeric",
     month: "long",
@@ -25,13 +28,13 @@ export default async function Home() {
         <div className="flex justify-center items-center gap-3">
           <p className="font-bold text-lg max-md:text-[15px]">الاسم:</p>
           <span className="text-[#d9341d] font-bold text-xl max-md:text-[15px]">
-            {currentUser.name}
+            {currentUser?.name}
           </span>
         </div>
         <div className="flex justify-center items-center gap-3">
           <p className="font-bold text-lg max-md:text-[15px]">الرقم الجامعي:</p>
           <span className="text-[#d9341d] font-bold text-xl max-md:text-[15px]">
-            {currentUser.uniNumber}
+            {currentUser?.uniNumber}
           </span>
         </div>
         <div className="flex justify-center items-center gap-3">
@@ -45,19 +48,19 @@ export default async function Home() {
             الرقم الوطني/ الشخصي:
           </p>
           <span className="text-[#d9341d] font-bold text-xl max-md:text-[15px]">
-            {currentUser.nationalNumber}
+            {currentUser?.nationalNumber}
           </span>
         </div>
         <div className="flex justify-center items-center gap-3">
           <p className="font-bold text-lg max-md:text-[15px]">الجنسية:</p>
           <span className="text-[#d9341d] font-bold text-xl max-md:text-[15px]">
-            {currentUser.nationality}
+            {currentUser?.nationality}
           </span>
         </div>
         <div className="flex justify-center items-center gap-3">
           <p className="font-bold text-lg max-md:text-[15px]">التخصص:</p>
           <span className="text-[#d9341d] font-bold text-xl max-md:text-[15px]">
-            {currentUser.specialization}
+            {currentUser?.specialization}
           </span>
         </div>
         <SignOut onClick />
