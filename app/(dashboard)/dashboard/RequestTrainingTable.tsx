@@ -12,6 +12,8 @@ import {
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -33,7 +35,10 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { updateStudentRole } from "@/lib/actions/role.action";
-import { updateRequestAdmission } from "@/lib/actions/request.action";
+import {
+  updateRequestAdmission,
+  updateTrainingRequestAdmission,
+} from "@/lib/actions/request.action";
 import { request } from "http";
 import Link from "next/link";
 
@@ -46,7 +51,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function RequestTable<TData, TValue>({
+export function RequestTrainingTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
@@ -96,25 +101,57 @@ export function RequestTable<TData, TValue>({
     },
     {
       accessorKey: "file",
-      header: `ملف طلب التدريب`,
+      header: `ملف طلب المراجعة`,
       cell: ({ row }) => {
         const request = row.original;
+        // console.log(request);
+
+        const downloadAllFiles = async () => {
+          try {
+            const zip = new JSZip();
+            // console.log("Files to download:", request.file); // Debugging log
+
+            for (const [index, fileUrl] of request.file.entries()) {
+              //   console.log(`Processing file ${index + 1}: ${fileUrl}`); // Debug log
+              try {
+                const response = await fetch(fileUrl);
+                if (!response.ok) {
+                  console.error(
+                    `Failed to fetch file: ${fileUrl}`,
+                    response.status
+                  );
+                  continue; // Skip this file
+                }
+                const blob = await response.blob();
+                zip.file(`file-${index + 1}.pdf`, blob);
+              } catch (error) {
+                console.error(`Error fetching file: ${fileUrl}`, error);
+              }
+            }
+
+            // console.log("Generating ZIP file...");
+            const zipBlob = await zip.generateAsync({ type: "blob" });
+            // console.log("ZIP file generated, starting download...");
+            saveAs(zipBlob, "files.zip");
+          } catch (error) {
+            console.error("Error in downloadAllFiles:", error);
+          }
+        };
 
         return (
-          <div className="mt-5">
-            <Link href={request.file} target="_blank">
-              <Button
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#0070f3",
-                  color: "white",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                قراءة الملف
-              </Button>
-            </Link>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={downloadAllFiles}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#0070f3",
+                color: "white",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              تحميل جميع الملفات
+            </Button>
           </div>
         );
       },
@@ -144,11 +181,8 @@ export function RequestTable<TData, TValue>({
             <Button
               className="bg-[green] text-white font-bold text-lg"
               onClick={async () => {
-                await updateStudentRole(
-                  request.user.roleStudent[0].id,
-                  "تم القبول في التدريب"
-                );
-                await updateRequestAdmission(request.user.id, "true");
+                await updateStudentRole(request.user.roleStudent[0].id, "ناجح");
+                await updateTrainingRequestAdmission(request.user.id, "true");
                 toast.success("تم قبول الطلب");
                 router.refresh();
               }}
@@ -161,9 +195,9 @@ export function RequestTable<TData, TValue>({
               onClick={async () => {
                 await updateStudentRole(
                   request.user?.roleStudent[0].id,
-                  "مقبول"
+                  "راسب"
                 );
-                await updateRequestAdmission(request.user?.id, "false");
+                await updateTrainingRequestAdmission(request.user?.id, "false");
                 toast.error("تم رفض القبول للطالب");
                 router.refresh();
               }}
@@ -176,7 +210,7 @@ export function RequestTable<TData, TValue>({
     },
     {
       accessorKey: "createdAt",
-      header: "تاريخ طلب التدريب",
+      header: "تاريخ طلب المراجعة",
       cell: ({ getValue }) => {
         const date = new Date(getValue());
         return date.toLocaleDateString("ar-EG", {
@@ -195,10 +229,10 @@ export function RequestTable<TData, TValue>({
         return (
           <div className="font-bold text-lg">
             <p className="text-[green]">
-              {request?.admission === "true" && "تم قبول التدريب"}
+              {request?.admission === "true" && "تم النجاح في التدريب"}
             </p>
             <p className="text-[red]">
-              {request?.admission === "false" && "تم رفض التدريب"}
+              {request?.admission === "false" && "لم يتم النجاح في التدريب"}
             </p>
             <p className="text-[gray]">
               {request?.admission === "معلق" && "معلق"}
@@ -348,4 +382,4 @@ export function RequestTable<TData, TValue>({
   );
 }
 
-export default RequestTable;
+export default RequestTrainingTable;

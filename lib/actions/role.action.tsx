@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+
 export async function updateStudentRole(roleId: string, newRoleValue: string) {
   try {
     const updatedRole = await prisma.role.update({

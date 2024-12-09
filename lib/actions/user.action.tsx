@@ -22,6 +22,7 @@ export async function getCurrentUser() {
       },
       include: {
         roleStudent: true,
+        request: true,
       },
     });
 

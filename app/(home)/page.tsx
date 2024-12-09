@@ -1,10 +1,13 @@
 import { getCurrentUser } from "@/lib/actions/user.action";
 import { redirect } from "next/navigation";
 import SignOut from "./components/SignOut";
+import UploadForm from "./components/UploadForm";
+import DownloadPdf from "./components/DownloadPdf";
+import DownloadTrainingPdf from "./components/DownloadTrainingPdf";
+import UploadTrainingFiles from "./components/UploadTrainingFiles";
 
 export default async function Home() {
   const currentUser = await getCurrentUser();
-  // console.log("current user", currentUser);
   if (!currentUser) {
     redirect("/sign-in");
   }
@@ -13,7 +16,7 @@ export default async function Home() {
     redirect("/dashboard");
   }
 
-  console.log(currentUser);
+  // console.log(currentUser);
   const dateObject = new Date(currentUser?.birthDate);
 
   const formattedDate = dateObject.toLocaleDateString("ar-EG", {
@@ -21,6 +24,7 @@ export default async function Home() {
     month: "long",
     day: "numeric",
   });
+
   return (
     <div className="flex flex-1 flex-col items-center">
       <div className="w-[90%] bg-gray-400 grid grid-cols-3 h-auto mt-20 px-7 py-3 rounded-md gap-y-4 max-md:grid-cols-1">
@@ -65,13 +69,59 @@ export default async function Home() {
         </div>
         <SignOut onClick />
       </div>
-      <div className="w-[90%] bg-gray-400 grid grid-cols-4 h-auto mt-5 px-7 py-3 rounded-md">
-        {" "}
-        <p className="text-[#2b3e96] text-3xl font-bold text-shadow-lg">
-          التدريب الميداني
-        </p>
-      </div>
-      <div className=""></div>
+
+      {currentUser.roleStudent[0].name === "مقدم" && (
+        <>
+          <div className="w-[90%] bg-gray-400 grid grid-cols-4 h-auto mt-5 px-7 py-3 rounded-md">
+            {" "}
+            <p className="text-[#2b3e96] text-3xl font-bold text-shadow-lg">
+              القبول الاكاديمي
+            </p>
+          </div>
+          <div className="mt-10 font-bold text-3xl">
+            <h1>برجاء الانتظار حتى يتم قبولك اكاديميا</h1>
+          </div>
+        </>
+      )}
+      {/* تقديم الملفات */}
+      {currentUser.roleStudent[0].name === "مقبول" && (
+        <>
+          <div className="w-[90%] bg-gray-400 grid grid-cols-4 h-auto mt-5 px-7 py-3 rounded-md">
+            {" "}
+            <p className="text-[#2b3e96] text-3xl font-bold text-shadow-lg">
+              القبول الاكاديمي
+            </p>
+          </div>
+          <div className="mt-10 text-3xl font-bold w-[90%]">
+            <h1 className="mt-10">تم القبول اكاديميا</h1>
+            <h1>قم بتنزيل الملف وتعبئته ثم قم برفعه</h1>
+            <DownloadPdf />
+            <div className="mt-10">
+              <UploadForm user={currentUser} />
+            </div>
+          </div>
+        </>
+      )}
+      {currentUser.roleStudent[0].name === "تم القبول في التدريب" && (
+        <>
+          <div className="w-[90%] bg-gray-400 grid grid-cols-4 h-auto mt-5 px-7 py-3 rounded-md">
+            {" "}
+            <p className="text-[#2b3e96] text-3xl font-bold text-shadow-lg">
+              التدريب الميداني
+            </p>
+          </div>
+          <div className="my-10 text-3xl font-bold w-[90%]">
+            <h1 className="mt-5">تم قبولك في التدريب الميداني</h1>
+            <h1 className="mt-5">
+              قم بتنزيل الملفات الخاصة بالتدريب ورفعها عند الانتهاء
+            </h1>
+            <DownloadTrainingPdf />
+            <div className="mt-10">
+              <UploadTrainingFiles user={currentUser} />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

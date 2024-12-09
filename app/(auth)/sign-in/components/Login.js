@@ -71,7 +71,7 @@ const Login = () => {
         className="border-[1.5px] px-4 py-8 rounded-[14px] shadow-md max-w-[500px] w-full"
       >
         <h1 className="text-[#003b95] text-center font-bold text-3xl">
-          {"تسجيل الدخول"}
+          {"بوابة دخول الطالب"}
         </h1>
         <FormField
           control={form.control}

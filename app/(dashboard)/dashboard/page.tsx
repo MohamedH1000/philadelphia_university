@@ -5,6 +5,11 @@ import UserTable from "./UserTable";
 import { getAllUsers, getCurrentUser } from "@/lib/actions/user.action";
 import { use } from "react";
 import RequestTable from "./RequestTable";
+import {
+  getAllRequests,
+  getAllTrainingRequests,
+} from "@/lib/actions/request.action";
+import RequestTrainingTable from "./RequestTrainingTable";
 // import { getProducts } from '@/lib/db';
 
 export default async function ProductsPage(props: {
@@ -14,6 +19,8 @@ export default async function ProductsPage(props: {
   const search = searchParams.q ?? "";
   const offset = searchParams.offset ?? 0;
   const users = await getAllUsers();
+  const request = await getAllRequests();
+  const trainingRequests = await getAllTrainingRequests();
   let requests: any = [];
   // console.log(users);
   // const { products, newOffset, totalProducts } = await getProducts(
@@ -51,14 +58,10 @@ export default async function ProductsPage(props: {
         <UserTable data={users} />
       </TabsContent>
       <TabsContent value="requests">
-        <RequestTable data={requests} />
+        <RequestTable data={request} />
       </TabsContent>
       <TabsContent value="training">
-        {/* <ProductsTable
-          products={products}
-          offset={newOffset ?? 0}
-          totalProducts={totalProducts}
-        /> */}
+        <RequestTrainingTable data={trainingRequests} />
       </TabsContent>
       <TabsContent value="archived">
         {/* <ProductsTable

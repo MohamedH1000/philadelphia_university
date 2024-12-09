@@ -115,7 +115,7 @@ const Register = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="border-[1.5px] px-4 py-8 rounded-[14px] shadow-md max-w-[500px] w-full"
+        className="border-[1.5px] px-4 py-8 rounded-[14px] shadow-md max-w-[500px] w-full mb-10"
       >
         <h1 className="text-[#003b95] text-center font-bold text-3xl">
           {"تسجيل حساب جديد"}
