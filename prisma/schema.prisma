@@ -51,6 +51,7 @@ model Request {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 model RequestTraining {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @unique @db.ObjectId

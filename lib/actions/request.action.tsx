@@ -91,6 +91,7 @@ export async function updateRequestAdmission(userId: string, value: string) {
     console.log(error);
   }
 }
+
 export async function updateTrainingRequestAdmission(
   userId: string,
   value: string
@@ -126,6 +127,7 @@ export async function getAllRequests() {
     console.log(error);
   }
 }
+
 export async function getAllTrainingRequests() {
   try {
     const requests = await prisma.requestTraining.findMany({

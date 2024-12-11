@@ -65,70 +65,76 @@ const Login = () => {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="border-[1.5px] px-4 py-8 rounded-[14px] shadow-md max-w-[500px] w-full"
-      >
-        <h1 className="text-[#003b95] text-center font-bold text-3xl">
-          {"بوابة دخول الطالب"}
-        </h1>
-        <FormField
-          control={form.control}
-          name="universityNo"
-          render={({ field }) => (
-            <FormItem className="mt-4">
-              <FormLabel className="text-[22px]">الرقم الجامعي</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={"قم بادخال الرقم الجامعي"}
-                  {...field}
-                  className="p-4 placeholder:opacity-65 rounded-[12px] border-[gray] w-full"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem className="mt-2">
-              <FormLabel className="text-[22px]">{"الباسوورد"}</FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  placeholder={"الباسوورد"}
-                  {...field}
-                  className="p-4 placeholder:opacity-65 rounded-[12px] border-[gray] w-full"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <button
-          type="submit"
-          className="w-full rounded-[12px] bg-[#003b95] mt-8 text-white h-[40px] hover:opacity-75 transition duration-300 hover:scale-[1.025] active:scale-[0.95]"
-          disabled={isLoading}
+    <div className="min-h-screen flex items-center justify-center">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="bg-white shadow-lg rounded-lg p-6 sm:p-10 max-w-md w-full border border-gray-200"
         >
-          {isLoading ? (
-            <>
-              <Loader size="md" content={`${t("Login.Loading")}`} />
-            </>
-          ) : (
-            "تسجيل الدخول"
-          )}
-        </button>
-        <div className="mt-4 flex justify-center items-center gap-3">
-          <p>{"ليس لديك حساب؟"}</p>
-          <Link href={"/sign-up"}>
-            <p className="font-bold hover:underline">{"قم بتسجيل حساب جديد"}</p>
-          </Link>
-        </div>
-      </form>
-    </Form>
+          <h1 className="text-blue-900 text-center font-extrabold text-2xl sm:text-3xl mb-6">
+            بوابة دخول الطالب
+          </h1>
+          <FormField
+            control={form.control}
+            name="universityNo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-lg font-medium text-gray-700">
+                  الرقم الجامعي
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="قم بادخال الرقم الجامعي"
+                    {...field}
+                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="mt-4">
+                <FormLabel className="text-lg font-medium text-gray-700">
+                  الباسوورد
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="الباسوورد"
+                    {...field}
+                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <button
+            type="submit"
+            className="w-full mt-6 bg-blue-900 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader size="md" content="جاري التحميل..." />
+            ) : (
+              "تسجيل الدخول"
+            )}
+          </button>
+          <div className="mt-6 flex justify-center text-sm text-gray-600">
+            <p>ليس لديك حساب؟</p>
+            <Link href="/sign-up">
+              <p className="ml-1 font-bold text-blue-600 hover:underline">
+                قم بتسجيل حساب جديد
+              </p>
+            </Link>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 };
 
