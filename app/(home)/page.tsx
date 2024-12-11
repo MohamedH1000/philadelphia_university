@@ -122,6 +122,19 @@ export default async function Home() {
           </div>
         </>
       )}
+      {currentUser.roleStudent[0].name === "ناجح" && (
+        <>
+          <div className="w-[90%] bg-gray-400 grid grid-cols-4 h-auto mt-5 px-7 py-3 rounded-md">
+            {" "}
+            <p className="text-[#2b3e96] text-3xl font-bold text-shadow-lg">
+              التدريب الميداني
+            </p>
+          </div>
+          <div className="my-10 text-3xl font-bold w-[90%]">
+            <h1 className="mt-5">تم الانتهاء من التدريب الميداني بنجاح</h1>
+          </div>
+        </>
+      )}
     </div>
   );
 }
