@@ -21,8 +21,7 @@ export async function getCurrentUser() {
         uniNumber: session.user.universityNo as string,
       },
       include: {
-        roleStudent: true,
-        request: true,
+        role: true,
       },
     });
 
@@ -34,22 +33,6 @@ export async function getCurrentUser() {
   }
 }
 
-export async function updateStudentAdmission(userId: String, value: String) {
-  try {
-    const updatedAdmission = await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        admission: value,
-      },
-    });
-    return updatedAdmission;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 export async function getAllUsers() {
   try {
     const users = await prisma.user.findMany({
@@ -58,9 +41,7 @@ export async function getAllUsers() {
         name: true,
         uniNumber: true,
         role: true,
-        roleStudent: true,
         specialization: true,
-        admission: true,
         nationality: true,
         nationalNumber: true,
         birthDate: true,
@@ -111,12 +92,6 @@ export async function createUser(userData: any) {
         nationality,
         specialization,
         hashedPassword,
-        roleStudent: {
-          create: {
-            value: "1",
-            name: "مقدم",
-          },
-        },
       },
     });
 

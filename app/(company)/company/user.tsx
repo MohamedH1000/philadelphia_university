@@ -1,6 +1,4 @@
 import { Button } from "@/components/ui/button";
-// import { auth, signOut } from '@/lib/auth';
-import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,11 +14,10 @@ import { redirect } from "next/navigation";
 
 export async function User() {
   const currentUser = await getCurrentUser();
-  if (currentUser?.role.name !== "university") {
+  if (currentUser?.role.name !== "company") {
     redirect("/");
   }
-  // let session = await auth();
-  // let user = session?.user || "";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

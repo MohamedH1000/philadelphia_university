@@ -48,7 +48,7 @@ const Login = () => {
         redirect: false,
       }).then((callback) => {
         if (callback?.ok) {
-          toast.success("تم تسجيل دخول الطالب بنجاح");
+          toast.success("تم تسجيل الدخول بنجاح");
           router.push("/");
         }
 

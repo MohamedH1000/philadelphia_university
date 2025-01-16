@@ -20,45 +20,81 @@ model User {
   birthDate      DateTime
   nationalNumber String
   nationality String
-  admission String? @default("")
+  studentStatus String? @default("")
   specialization String
-  role String?
+  roleId String @db.ObjectId @default("676b012d1ebbc2448c45d59e")
   hashedPassword String?
+  recommendations String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  request Request[]
-  roleStudent Role[]
+  // request Request[]
+  // roleStudent Role[]
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
   requestTraining RequestTraining[]
+  company Company[]
+  report Report[]
 }
 
 model Role {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  value String
   name String
-  userId String @db.ObjectId
 
-  user User @relation(fields: [userId], references: [id], onDelete:Cascade)
+  user User[]
 }
 
-model Request {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @unique @db.ObjectId
-  admission String? @default("معلق")
-  file String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+model Report {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    companyId String @db.ObjectId
+    userId String @db.ObjectId
+    diSupNote String
+    attendance Json
+    rate Json
+    createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete:Cascade)
 }
 
 model RequestTraining {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @unique @db.ObjectId
-  admission String? @default("معلق")
-  file String[] @default([])
+  userId String @db.ObjectId
+  companyId String @db.ObjectId
+  universityStatus String? @default("pending")
+  companyStatus String? @default("pending")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  company Company @relation(fields: [companyId], references: [id], onDelete:Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Company {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    name String
+    email String
+    userId String @db.ObjectId
+    phoneNumber String?
+    address String?
+    status String @default("pending")
+    location String
+    traSuViNa String?
+    traActAr String
+    createdAt DateTime @default(now())
+
+    report Report[]
+    request RequestTraining[]
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+// model Request {
+//   id String @id @default(auto()) @map("_id") @db.ObjectId
+//   userId String @unique @db.ObjectId
+//   admission String? @default("معلق")
+//   file String
+//   createdAt      DateTime @default(now())
+//   updatedAt      DateTime @updatedAt
+
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }

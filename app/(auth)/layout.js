@@ -4,6 +4,7 @@ import React from "react";
 
 const layout = async ({ children }) => {
   const currentUser = await getCurrentUser();
+  console.log(currentUser);
   if (currentUser) {
     redirect("/");
   }

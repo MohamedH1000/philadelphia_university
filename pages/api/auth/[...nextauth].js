@@ -42,7 +42,7 @@ export const authOptions = {
   ],
   session: {
     strategy: "jwt", // Use JWT-based sessions
-    maxAge: 60 * 60 * 24 * 7, // Session expiry duration (7 days)
+    maxAge: 60 * 60 * 24, // Session expiry duration (1 days)
   },
   pages: {
     signIn: "/sign-in", // Custom sign-in page

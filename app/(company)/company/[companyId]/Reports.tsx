@@ -30,12 +30,11 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { updateStudentRole } from "@/lib/actions/role.action";
-import { updateRequestAdmission } from "@/lib/actions/request.action";
-import { request } from "http";
-import Link from "next/link";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
+import { Textarea } from "@/components/ui/textarea";
+import { daysOfWeek, rateColumns, rates } from "@/constants/constants";
 
 export type Payment = {
   id: string;
@@ -46,7 +45,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function RequestTable<TData, TValue>({
+export function Reports<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
@@ -79,104 +78,163 @@ export function RequestTable<TData, TValue>({
       enableHiding: false,
     },
     {
-      accessorKey: "name",
-      header: "الاسم",
+      accessorKey: "username",
+      header: "اسم الطالب",
       cell: ({ row }) => {
-        const request = row.original;
-        return <p>{request.user.name}</p>;
+        const report = row.original;
+        return <p>{report.user.name}</p>;
       },
     },
     {
       accessorKey: "uniNumber",
-      header: `الرقم الجامعي`,
+      header: "الرقم الجامعي",
       cell: ({ row }) => {
-        const request = row.original;
-        return <p>{request.user.uniNumber}</p>;
+        const report = row.original;
+        return <p>{report.user.uniNumber}</p>;
       },
     },
     {
-      accessorKey: "file",
-      header: `ملف طلب التدريب`,
+      accessorKey: "specialization",
+      header: `التخصص`,
       cell: ({ row }) => {
-        const request = row.original;
+        const report = row.original;
+        return <p>{report.user.specialization}</p>;
+      },
+    },
+    {
+      accessorKey: "reports",
+      header: "التقارير الخاصة بالطالب",
+      cell: ({ row }) => {
+        const report = row.original; // Assuming the row contains the report data
+        return (
+          <Dialog>
+            <DialogTrigger className="bg-primary text-white rounded-md p-2 font-bold flex gap-2">
+              عرض التقرير
+            </DialogTrigger>
+            <DialogContent className="h-[700px] overflow-y-auto">
+              <form className="space-y-8">
+                {/* Display Student Name */}
+                <div>
+                  <label className="block text-gray-700 font-bold my-5">
+                    اسم الطالب
+                  </label>
+                  <Input value={report.user.name} readOnly />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">
+                    تاريخ التقرير
+                  </label>
+                  <Input
+                    value={report.createdAt.toLocaleDateString("ar-EG", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                    readOnly
+                  />
+                </div>
 
-        return (
-          <div className="mt-5">
-            <Link href={request.file} target="_blank">
-              <Button
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#0070f3",
-                  color: "white",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                قراءة الملف
-              </Button>
-            </Link>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "roleStudent",
-      header: `role`,
-      cell: ({ row }) => {
-        const request = row.original;
-        // console.log(request);
-        return (
-          <div className="font-bold text-lg">
-            <p>{request?.user?.roleStudent[0]?.name}</p>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "admission",
-      header: `القبول`,
-      cell: ({ row }) => {
-        const request = row.original;
-        // console.log("users", user);
+                {/* Display Attendance */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">
+                    الحضور
+                  </label>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full table-auto border-collapse border border-gray-200">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border border-gray-200 px-4 py-2 text-right">
+                            اليوم
+                          </th>
+                          <th className="border border-gray-200 px-4 py-2 text-right">
+                            الحضور
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {daysOfWeek.map((day) => (
+                          <tr key={day}>
+                            <td className="border border-gray-200 px-4 py-2">
+                              {day}
+                            </td>
+                            <td className="border border-gray-200 px-4 py-2 text-center">
+                              <input
+                                type="checkbox"
+                                checked={report.attendance[day]}
+                                disabled
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
 
-        return (
-          <div className="flex flex-col items-center gap-3">
-            <Button
-              className="bg-[green] text-white font-bold text-lg"
-              onClick={async () => {
-                await updateStudentRole(
-                  request.user.roleStudent[0].id,
-                  "تم القبول في التدريب"
-                );
-                await updateRequestAdmission(request.user.id, "true");
-                toast.success("تم قبول الطلب");
-                router.refresh();
-              }}
-            >
-              قبول
-            </Button>
-            <Button
-              variant="destructive"
-              className=" font-bold text-lg"
-              onClick={async () => {
-                await updateStudentRole(
-                  request.user?.roleStudent[0].id,
-                  "مقبول"
-                );
-                await updateRequestAdmission(request.user?.id, "false");
-                toast.error("تم رفض القبول للطالب");
-                router.refresh();
-              }}
-            >
-              رفض
-            </Button>
-          </div>
+                {/* Display Rate */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">
+                    تقييم الطالب
+                  </label>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full table-auto border-collapse border border-gray-200">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border border-gray-200 px-4 py-2 text-right">
+                            المعايير
+                          </th>
+                          {rateColumns.map((column) => (
+                            <th
+                              key={column}
+                              className="border border-gray-200 px-4 py-2 text-center"
+                            >
+                              {column}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.keys(report.rate).map((criterion) => (
+                          <tr key={criterion}>
+                            <td className="border border-gray-200 px-4 py-2 text-right">
+                              {criterion}
+                            </td>
+                            {rateColumns.map((column) => (
+                              <td
+                                key={`${criterion}-${column}`}
+                                className="border border-gray-200 px-4 py-2 text-center"
+                              >
+                                <input
+                                  type="radio"
+                                  name={criterion}
+                                  checked={report.rate[criterion] === column}
+                                  disabled
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Display Supervisor Notes */}
+                <div>
+                  <label className="block text-gray-700 font-bold mb-2">
+                    ملاحظة الرئيس المباشر
+                  </label>
+                  <Textarea value={report.diSupNote} readOnly />
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         );
       },
     },
     {
       accessorKey: "createdAt",
-      header: "تاريخ طلب التدريب",
+      header: "تاريخ انشاء التقرير",
       cell: ({ getValue }) => {
         const date = new Date(getValue());
         return date.toLocaleDateString("ar-EG", {
@@ -184,27 +242,6 @@ export function RequestTable<TData, TValue>({
           month: "long",
           day: "numeric",
         });
-      },
-    },
-    {
-      accessorKey: "admission",
-      header: `الحالة`,
-      cell: ({ row }) => {
-        const request = row.original;
-        // console.log(request);
-        return (
-          <div className="font-bold text-lg">
-            <p className="text-[green]">
-              {request?.admission === "true" && "تم قبول التدريب"}
-            </p>
-            <p className="text-[red]">
-              {request?.admission === "false" && "تم رفض التدريب"}
-            </p>
-            <p className="text-[gray]">
-              {request?.admission === "معلق" && "معلق"}
-            </p>
-          </div>
-        );
       },
     },
   ];
@@ -348,4 +385,4 @@ export function RequestTable<TData, TValue>({
   );
 }
 
-export default RequestTable;
+export default Reports;

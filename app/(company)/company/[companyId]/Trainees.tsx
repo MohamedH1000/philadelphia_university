@@ -12,8 +12,6 @@ import {
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -34,13 +32,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { updateStudentRole } from "@/lib/actions/role.action";
-import {
-  updateRequestAdmission,
-  updateTrainingRequestAdmission,
-} from "@/lib/actions/request.action";
-import { request } from "http";
-import Link from "next/link";
+import { acceptTraCo, rejectTraCo } from "@/lib/actions/request.action";
 
 export type Payment = {
   id: string;
@@ -51,7 +43,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function RequestTrainingTable<TData, TValue>({
+export function Trainees<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
@@ -84,8 +76,8 @@ export function RequestTrainingTable<TData, TValue>({
       enableHiding: false,
     },
     {
-      accessorKey: "name",
-      header: "الاسم",
+      accessorKey: "username",
+      header: "اسم الطالب",
       cell: ({ row }) => {
         const request = row.original;
         return <p>{request.user.name}</p>;
@@ -93,124 +85,23 @@ export function RequestTrainingTable<TData, TValue>({
     },
     {
       accessorKey: "uniNumber",
-      header: `الرقم الجامعي`,
+      header: "الرقم الجامعي",
       cell: ({ row }) => {
         const request = row.original;
         return <p>{request.user.uniNumber}</p>;
       },
     },
     {
-      accessorKey: "file",
-      header: `ملف طلب المراجعة`,
+      accessorKey: "specialization",
+      header: `التخصص`,
       cell: ({ row }) => {
         const request = row.original;
-        // console.log(request);
-
-        const downloadAllFiles = async () => {
-          try {
-            const zip = new JSZip();
-            // console.log("Files to download:", request.file); // Debugging log
-
-            for (const [index, fileUrl] of request.file.entries()) {
-              //   console.log(`Processing file ${index + 1}: ${fileUrl}`); // Debug log
-              try {
-                const response = await fetch(fileUrl);
-                if (!response.ok) {
-                  console.error(
-                    `Failed to fetch file: ${fileUrl}`,
-                    response.status
-                  );
-                  continue; // Skip this file
-                }
-                const blob = await response.blob();
-                zip.file(`file-${index + 1}.pdf`, blob);
-              } catch (error) {
-                console.error(`Error fetching file: ${fileUrl}`, error);
-              }
-            }
-
-            // console.log("Generating ZIP file...");
-            const zipBlob = await zip.generateAsync({ type: "blob" });
-            // console.log("ZIP file generated, starting download...");
-            saveAs(zipBlob, "files.zip");
-          } catch (error) {
-            console.error("Error in downloadAllFiles:", error);
-          }
-        };
-
-        return (
-          <div className="flex flex-col gap-2">
-            <Button
-              onClick={downloadAllFiles}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#0070f3",
-                color: "white",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              تحميل جميع الملفات
-            </Button>
-          </div>
-        );
+        return <p>{request.user.specialization}</p>;
       },
     },
     {
-      accessorKey: "roleStudent",
-      header: `role`,
-      cell: ({ row }) => {
-        const request = row.original;
-        // console.log(request);
-        return (
-          <div className="font-bold text-lg">
-            <p>{request?.user?.roleStudent[0]?.name}</p>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "admission",
-      header: `القبول`,
-      cell: ({ row }) => {
-        const request = row.original;
-        // console.log("users", user);
-
-        return (
-          <div className="flex flex-col items-center gap-3">
-            <Button
-              className="bg-[green] text-white font-bold text-lg"
-              onClick={async () => {
-                await updateStudentRole(request.user.roleStudent[0].id, "ناجح");
-                await updateTrainingRequestAdmission(request.user.id, "true");
-                toast.success("تم قبول الطلب");
-                router.refresh();
-              }}
-            >
-              قبول
-            </Button>
-            <Button
-              variant="destructive"
-              className=" font-bold text-lg"
-              onClick={async () => {
-                await updateStudentRole(
-                  request.user?.roleStudent[0].id,
-                  "راسب"
-                );
-                await updateTrainingRequestAdmission(request.user?.id, "false");
-                toast.error("تم رفض القبول للطالب");
-                router.refresh();
-              }}
-            >
-              رفض
-            </Button>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "createdAt",
-      header: "تاريخ طلب المراجعة",
+      accessorKey: "updatedAt",
+      header: "تاريخ بدء التدريب",
       cell: ({ getValue }) => {
         const date = new Date(getValue());
         return date.toLocaleDateString("ar-EG", {
@@ -221,25 +112,8 @@ export function RequestTrainingTable<TData, TValue>({
       },
     },
     {
-      accessorKey: "admission",
-      header: `الحالة`,
-      cell: ({ row }) => {
-        const request = row.original;
-        // console.log(request);
-        return (
-          <div className="font-bold text-lg">
-            <p className="text-[green]">
-              {request?.admission === "true" && "تم النجاح في التدريب"}
-            </p>
-            <p className="text-[red]">
-              {request?.admission === "false" && "لم يتم النجاح في التدريب"}
-            </p>
-            <p className="text-[gray]">
-              {request?.admission === "معلق" && "معلق"}
-            </p>
-          </div>
-        );
-      },
+      accessorKey: "reports",
+      header: "التقارير الخاصة بالطالب",
     },
   ];
   const table = useReactTable({
@@ -382,4 +256,4 @@ export function RequestTrainingTable<TData, TValue>({
   );
 }
 
-export default RequestTrainingTable;
+export default Trainees;

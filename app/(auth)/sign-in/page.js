@@ -9,10 +9,6 @@ export const metadata = {
 };
 
 const page = async () => {
-  const currentUser = await getCurrentUser();
-  if (currentUser) {
-    redirect("/");
-  }
   return (
     <div className="flex justify-center items-center min-h-screen w-full mt-[64px] px-5">
       <Login />

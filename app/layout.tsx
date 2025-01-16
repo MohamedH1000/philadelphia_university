@@ -3,13 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { Tajawal } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react";
-
-// const geistTajwal = localFont({
-//   src: "./fonts/Tajawal-Bold.ttf",
-//   variable: "--font-tajwal-bold",
-//   weight: "100 900",
-// });
 
 const tajwal = Tajawal({
   subsets: ["latin"],
@@ -31,7 +24,6 @@ export default function RootLayout({
       <body className={` ${tajwal.className} antialiased`}>
         {children}
         <Toaster position="bottom-right" reverseOrder={false} />
-        <Analytics />
       </body>
     </html>
   );

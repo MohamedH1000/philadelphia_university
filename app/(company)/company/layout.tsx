@@ -1,5 +1,23 @@
 import Link from "next/link";
-import { Home, PanelLeft, Settings } from "lucide-react";
+import {
+  Home,
+  LineChart,
+  Package,
+  Package2,
+  PanelLeft,
+  Settings,
+  ShoppingCart,
+  Users2,
+} from "lucide-react";
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -12,12 +30,15 @@ import { User } from "./user";
 import Providers from "./providers";
 import { NavItem } from "./nav-item";
 import { SearchInput } from "./search";
+import CompanySelect from "./components/CompanySelect";
+import { getAllCompanies } from "@/lib/actions/company.action";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const companies = await getAllCompanies();
   return (
     <Providers>
       <main className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -27,6 +48,7 @@ export default function DashboardLayout({
             <MobileNav />
             {/* <DashboardBreadcrumb /> */}
             <SearchInput />
+            <CompanySelect companies={companies} />
             <User />
           </header>
           <main className="grid flex-1 items-start gap-2 p-4 sm:px-6 sm:py-0 md:gap-4 bg-muted/40">
@@ -42,9 +64,28 @@ function DesktopNav() {
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
+        {/* <User />
+        <span className="sr-only">الادارة الالكترونية</span> */}
+
         <NavItem href="#" label="Dashboard">
           <Home className="h-5 w-5" />
         </NavItem>
+
+        {/* <NavItem href="#" label="Orders">
+          <ShoppingCart className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem href="/" label="Products">
+          <Package className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem href="/customers" label="Customers">
+          <Users2 className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem href="#" label="Analytics">
+          <LineChart className="h-5 w-5" />
+        </NavItem> */}
       </nav>
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
         <Tooltip>
@@ -77,10 +118,45 @@ function MobileNav() {
         <nav className="grid gap-6 text-lg font-medium">
           <Link
             href="#"
+            className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
+          >
+            <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
+            <span className="sr-only">جامعة فيلاديفيا</span>
+          </Link>
+          <Link
+            href="#"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <Home className="h-5 w-5" />
             لوحة القيادة
+          </Link>
+          <Link
+            href="#"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <ShoppingCart className="h-5 w-5" />
+            الطلبات
+          </Link>
+          <Link
+            href="#"
+            className="flex items-center gap-4 px-2.5 text-foreground"
+          >
+            <Package className="h-5 w-5" />
+            Products
+          </Link>
+          <Link
+            href="#"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <Users2 className="h-5 w-5" />
+            العملاء
+          </Link>
+          <Link
+            href="#"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <LineChart className="h-5 w-5" />
+            الاعدادات
           </Link>
         </nav>
       </SheetContent>
