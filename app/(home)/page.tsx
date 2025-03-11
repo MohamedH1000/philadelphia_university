@@ -22,7 +22,7 @@ export default async function Home() {
     redirect("/company");
   }
 
-  const activeCompanies = companies.filter(
+  const activeCompanies = companies?.filter(
     (company: Company) => company.status === "active"
   );
 
